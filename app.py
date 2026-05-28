@@ -51,22 +51,26 @@ class Ennemi:
         self.x = 0
         self.y = 0
         self.map = map
+        self.parcouru = [(0,0)]
 
         #p.run(self.update, self.draw)
 
     def draw(self):
-        self.map.draw()
         p.rect(self.y * 16,self.x * 16,16,16,3)
         p.text(16, 16, str(self.x) + " " + str(self.y), 0)
 
     def deplacement(self):
-        if self.map.tiles[self.y][self.x + 1] == "c":
+        if self.map.tiles[self.y][self.x + 1] == "c" and (self.y,self.x+1) not in self.parcouru:
+            self.parcouru.append((self.y,self.x+1))
             self.x += 1
-        elif self.map.tiles[self.y][self.x - 1] == "c":
+        elif self.map.tiles[self.y][self.x - 1] == "c" and (self.y,self.x-1) not in self.parcouru:
+            self.parcouru.append((self.y,self.x-1))
             self.x -= 1
-        elif self.map.tiles[self.y + 1][self.x] == "c":
+        elif self.map.tiles[self.y + 1][self.x] == "c" and (self.y+1,self.x) not in self.parcouru:
+            self.parcouru.append((self.y+1,self.x))
             self.y += 1
-        elif self.map.tiles[self.y - 1][self.x] == "c":
+        elif self.map.tiles[self.y - 1][self.x] == "c" and (self.y-1,self.x) not in self.parcouru:
+            self.parcouru.append((self.y-1,self.x))
             self.y -= 1
 
     def update(self):
