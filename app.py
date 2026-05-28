@@ -8,21 +8,29 @@ class App:
         p.mouse(True)
 
         self.map = Map()
-        #self.manche = Manche()
-        #self.ennemi = Ennemi(1,1,self.map)
         self.manche = Manche(self.map)
         self.joueur = Joueur(self.manche, self.map)
+
+        self.over = False
         
         p.run(self.update, self.draw)
 
     def update(self):
-        self.manche.update()
-        self.joueur.update()
+        if self.joueur.vie <= 0:
+            self.over = True
+        
+        if not self.over:
+            self.manche.update()
+            self.joueur.update()
 
     def draw(self):
-        self.map.draw()
-        self.manche.draw()
-        self.joueur.draw()
+        if not self.over:
+            self.map.draw()
+            self.manche.draw()
+            self.joueur.draw()
+        else:
+            p.rect(0, 0, 256, 256, 0)
+            p.text(128, 128, "Perdu !", 0)
 
 class Map:
     def __init__(self):
@@ -236,9 +244,6 @@ class Joueur:
             
             if p.btnp(p.KEY_E):
                 self.manche.manche_suivante()
-            
-        if self.vie <= 0:
-            pass
 
     def draw_hud(self):
         p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
