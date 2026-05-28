@@ -18,11 +18,10 @@ class App:
     def update(self):
         self.manche.update()
         self.joueur.update()
-        #self.ennemi.update()
 
     def draw(self):
         self.map.draw()
-        #self.ennemi.draw()
+        self.manche.draw()
         self.joueur.draw()
 
 class Map:
@@ -57,6 +56,9 @@ class Ennemi:
     def draw(self):
         p.rect(self.y * 16,self.x * 16,16,16,3)
 
+    def au_bout(self):
+        return self.map.tiles[self.y][self.x] == "f"
+
     def deplacement(self):
         if self.map.tiles[self.y][self.x + 1] == "c" and (self.y,self.x+1) not in self.parcouru:
             self.parcouru.append((self.y,self.x+1))
@@ -83,10 +85,12 @@ class Ennemi:
 
 
 class Manche:
-    def __init__(self,map:Map):
+    def __init__(self, map: Map):
         self.manche = 0
         self.active = False
-        self.ennemis = []
+        self.map = map
+        self.ennemis: list[Ennemi] = []
+        self.callback_degat = ""
 
     def manche_suivante(self):
         self.manche += 1
@@ -99,14 +103,20 @@ class Manche:
 
     def _spawn(self):
         for i in range (randint(self.manche,self.manche*10)):
-            ennemi = Ennemi(5,1,map)
+            ennemi = Ennemi(5,1,self.map)
             self.ennemis.append(ennemi)
 
     def update(self):
         self.ennemi_vivant()
         for ennemi in self.ennemis:
-            self.ennemi.draw
-            self.ennemi.update
+            ennemi.update()
+            if ennemi.au_bout():
+                self.ennemis.remove(ennemi)
+                self.callback_degat(ennemi.degats)
+
+    def draw(self):
+        for ennemi in self.ennemis:
+            ennemi.draw()
 
 class Tour:
     def __init__(self, x, y, taille, distance, degat, vitesse, prix,  type_tour = "normal"):
@@ -148,6 +158,11 @@ class Joueur:
         self.map = carte
         self.tours: list[Tour] = []
         self.placement = None
+
+        self.manche.callback_degat = self.perdre_vie
+
+    def perdre_vie(self, degat):
+        self.vie -= degat
 
     def update_sidebar(self):
         if p.btnp(p.MOUSE_BUTTON_LEFT):
