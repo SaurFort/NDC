@@ -4,15 +4,18 @@ class App:
     def __init__(self):
         p.init(256, 256, title="Tower Defense")
         p.load("theme.pyxres")
+        p.mouse(True)
 
         self.map = Map()
         # self.manche = Manche()
         self.joueur = Joueur(Manche())
         self.ennemi = Ennemi(1,1,1,self.map)
-
+        self.manche = Manche()
+        
         p.run(self.update, self.draw)
 
     def update(self):
+        self.manche.update()
         self.joueur.update()
         self.ennemi.update()
 
@@ -39,40 +42,6 @@ class Map:
         self.tiles[14][15] = "f"
         p.text(2, 5, "Spawn", 0)
         p.text(227, 246, "Fin", 0)
-
-class Manche:
-    def __init__(self):
-        self.manche = 1
-
-class Tour:
-    def __init__(self, x, y, taille, distance, degat, vitesse, prix,  type_tour = "normal"):
-        assert type_tour in ["normal"]
-        self.type = type_tour
-        self.x = x
-        self.y = y
-        self.taille = taille
-        self.distance = distance
-
-        self.niveau = 1
-        self.degat = degat
-        self.vitesse = vitesse
-        self.prix = prix
-
-class Joueur:
-    def __init__(self, manche: Manche):
-        self.argent = 50
-        self.manche = manche
-        self.vie = 20
-
-    def draw_hud(self):
-        p.text(217, 1, "Tour " + str(self.manche.manche), 0)
-        p.text(224 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
-        p.text(236 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
-
-    def update(self):
-        #self.draw_hud()
-        pass
-
 
 class Ennemi:
     def __init__(self,pv,vitesse,degats, map: Map):
@@ -106,5 +75,78 @@ class Ennemi:
         if self.map.tiles[self.y][self.x-1] == "c":
             self.y -= 1
         p.text(16, 16, str(self.x) + " " + str(self.y), 0)
+
+class Manche:
+    def __init__(self):
+        self.manche = 0
+        self.active = False
+        self.ennemis = []
+
+    def manche_suivante(self):
+        self.manche += 1
+        self.active = True
+        self._spawn()
+
+    def ennemi_vivant(self):
+        if len(self.ennemis) == 0:
+            self.active = False
+
+    def _spawn(self):
+        ennemi = Ennemi(1, 1, 1)
+
+    def update(self):
+        self.ennemi_vivant()
+
+class Tour:
+    def __init__(self, x, y, taille, distance, degat, vitesse, prix,  type_tour = "normal"):
+        assert type_tour in ["normal"]
+        self.type = type_tour
+        self.x = x
+        self.y = y
+        self.taille = taille
+        self.distance = distance
+
+        self.niveau = 1
+        self.degat = degat
+        self.vitesse = vitesse
+        self.prix = prix
+
+    def draw(self, map: Map):
+        map.tiles[self.y][self.x] = "t-" + self.type
+        if self.type == "normal":
+            p.blt(self.x*16, self.y*16, 0, 0, 0, 16, 16)
+
+class Joueur:
+    def __init__(self, manche: Manche, carte: Map):
+        self.argent = 50
+        self.vie = 20
+        self.manche = manche
+        self.map = carte
+        self.tours: list[Tour] = []
+
+    def update_sidebar(self):
+        pass
+
+    def update(self):
+        self.update_sidebar()
+
+    def draw_hud(self):
+        p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
+        p.text(224 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
+        p.text(236 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
+
+    def draw_tour(self):
+        for tour in self.tours:
+            tour.draw(self.map)
+
+    def draw_sidebar(self):
+        p.blt(240, 32, 0, 0 , 0, 16, 16)
+        p.rectb(240, 32, 16, 16, 0)
+        p.text(243, 50, "50$", 7)
+
+    def draw(self):
+        self.draw_hud()
+        self.draw_tour()
+        self.draw_sidebar()
 
 App()
