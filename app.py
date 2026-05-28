@@ -12,8 +12,7 @@ class App:
         p.run(self.update, self.draw)
 
     def update(self):
-        #self.joueur.update()
-        pass
+        self.manche.update()
 
     def draw(self):
         self.map.draw()
@@ -68,7 +67,24 @@ class Ennemi:
 
 class Manche:
     def __init__(self):
-        self.manche = 1
+        self.manche = 0
+        self.active = False
+        self.ennemis = []
+
+    def manche_suivante(self):
+        self.manche += 1
+        self.active = True
+        self._spawn()
+
+    def ennemi_vivant(self):
+        if len(self.ennemis) == 0:
+            self.active = False
+
+    def _spawn(self):
+        ennemi = Ennemi(1, 1, 1)
+
+    def update(self):
+        self.ennemi_vivant()
 
 class Tour:
     def __init__(self, x, y, taille, distance, degat, vitesse, prix,  type_tour = "normal"):
