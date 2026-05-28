@@ -116,6 +116,7 @@ class Tour:
         self.y = y
         self.taille = taille
         self.distance = distance
+        self.valide = False
 
         self.niveau = 1
         self.degat = degat
@@ -124,8 +125,15 @@ class Tour:
 
     def preview_draw(self, map: Map):
         if self.type == "normal":
+            p.rectb(self.x*16 - self.distance * 16, self.y*16 - self.distance * 16, self.distance * 32 + 16, self.distance * 32 + 16, 7)
             p.blt(self.x*16, self.y*16, 0, 0, 0, 16, 16)
-            p.rectb(self.x*16, self.y*16, 16, 16, 0)
+            if self.valide:
+                p.rectb(self.x*16, self.y*16, 16, 16, 0)
+            else:
+                p.rectb(self.x*16, self.y*16, 16, 16, 8)
+
+    def tir(self, ennemi: Ennemi):
+        ennemi.pv -= self.degat
 
     def draw(self, map: Map):
         map.tiles[self.y][self.x] = "t-" + self.type
@@ -148,10 +156,32 @@ class Joueur:
             if self.argent >= 200:
                 if x >= 240 and x <= 256 and y >= 32 and y <= 48:
                     self.argent -= 200
-                    self.placement = Tour(7, 7, 1, 2, 1, 1, 500, "normal")
+                    self.placement = Tour(7, 7, 1, 2, 1, 1, 200, "normal")
 
     def update_placement_tour(self):
         assert isinstance(self.placement, Tour)
+        if p.btnp(p.KEY_BACKSPACE):
+            self.argent += self.placement.prix
+            self.placement = None
+            return
+
+        x = self.placement.x
+        y = self.placement.y
+        self.placement.valide = not self.map.tiles[x][y] in ["c", "s", "f"]
+
+        if p.btnp(p.KEY_RIGHT) and x < 14:
+            self.placement.x += 1
+        if p.btnp(p.KEY_LEFT) and x > 0:
+            self.placement.x -= 1
+        if p.btnp(p.KEY_UP) and y  > 0:
+            self.placement.y -= 1
+        if p.btnp(p.KEY_DOWN) and y < 15:
+            self.placement.y += 1 
+        
+        if p.btnp(p.KEY_RETURN) and self.placement.valide:
+            self.placement.prix = 500
+            self.tours.append(self.placement)
+            self.placement = None
 
     def update(self):
         if not self.manche.active:
@@ -159,11 +189,17 @@ class Joueur:
 
             if self.placement:
                 self.update_placement_tour()
+            
+            if p.btnp(p.KEY_E):
+                self.manche.manche_suivante()
 
     def draw_hud(self):
         p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
         p.text(224 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
         p.text(236 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
+
+        if not self.manche.active:
+            p.text(96, 248, "E -> manche suivante", 0)
 
     def draw_tour(self):
         for tour in self.tours:
