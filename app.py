@@ -3,6 +3,7 @@ import pyxel as p
 class App:
     def __init__(self):
         p.init(256, 256, title="Tower Defense")
+        p.load("theme.pxres")
 
         self.map = Map()
         self.joueur = Joueur()
