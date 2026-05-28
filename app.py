@@ -21,8 +21,10 @@ class Map:
         self.tiles = [ [ '' for _ in range(16) ] for _ in range(16) ]
 
     def draw(self):
-        pass
+        p.rect(0, 0, 256, 256, 11)
 
 class Joueur:
     def __init__(self):
         self.argent = 0
+
+App()
