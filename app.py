@@ -133,7 +133,6 @@ class Manche:
                     self.joueur.perdre_vie(ennemi.degats)
 
     def draw(self):
-        p.text(32, 32, str(len(self.ennemis)), 0)
         for ennemi in self.ennemis:
             ennemi.draw()
 
