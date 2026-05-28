@@ -4,6 +4,7 @@ class App:
     def __init__(self):
         p.init(256, 256, title="Tower Defense")
         p.load("theme.pyxres")
+        p.mouse(True)
 
         self.map = Map()
         self.manche = Manche()
@@ -13,6 +14,7 @@ class App:
 
     def update(self):
         self.manche.update()
+        self.joueur.update()
 
     def draw(self):
         self.map.draw()
@@ -113,8 +115,14 @@ class Joueur:
         self.map = carte
         self.tours: list[Tour] = []
 
+    def update_sidebar(self):
+        pass
+
+    def update(self):
+        self.update_sidebar()
+
     def draw_hud(self):
-        p.text(217, 1, "Tour " + str(self.manche.manche), 0)
+        p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
         p.text(224 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
         p.text(236 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
 
@@ -122,8 +130,14 @@ class Joueur:
         for tour in self.tours:
             tour.draw(self.map)
 
+    def draw_sidebar(self):
+        p.blt(240, 32, 0, 0 , 0, 16, 16)
+        p.rectb(240, 32, 16, 16, 0)
+        p.text(243, 50, "50$", 7)
+
     def draw(self):
         self.draw_hud()
-        self.draw_tour
+        self.draw_tour()
+        self.draw_sidebar()
 
 App()
