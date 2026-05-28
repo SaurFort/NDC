@@ -114,6 +114,7 @@ class Manche:
             for ennemi in self.ennemis:
                 if ennemi.pv <= 0:
                     self.ennemis.remove(ennemi)
+                    self.joueur.argent += 10
                 ennemi.update()
                 if ennemi.au_bout():
                     self.ennemis.remove(ennemi)
