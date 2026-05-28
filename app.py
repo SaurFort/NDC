@@ -6,15 +6,17 @@ class App:
         p.load("theme.pyxres")
 
         self.map = Map()
-        self.joueur = Joueur()
+        # self.manche = Manche()
+        self.joueur = Joueur(Manche())
 
         p.run(self.update, self.draw)
 
     def update(self):
-        pass
+        self.joueur.update()
 
     def draw(self):
         self.map.draw()
+        self.joueur.draw_hud()
 
 class Map:
     def __init__(self):
@@ -26,8 +28,21 @@ class Map:
         for element in self.chemin:
             p.rect(element[0]*16,element[1]*16,16,16,10)
 
-class Joueur:
+class Manche:
     def __init__(self):
-        self.argent = 0
+        self.manche = 1
+
+class Joueur:
+    def __init__(self, manche: Manche):
+        self.argent = 1000
+        self.manche = manche
+
+    def draw_hud(self):
+        p.text(233, 1, "Tour " + str(self.manche.manche), 0)
+        p.text(252 - (4 * len(str(self.argent))), 7, str(self.argent) + "$" , 0)
+
+    def update(self):
+        #self.draw_hud()
+        pass
 
 App()
