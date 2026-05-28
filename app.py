@@ -108,6 +108,7 @@ class Manche:
     def ennemi_vivant(self):
         if len(self.ennemis) == 0:
             self.active = False
+            self.joueur.argent+=100
 
     def _spawn(self):
         for i in range (randint(self.manche,self.manche*10)):
