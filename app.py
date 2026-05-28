@@ -3,7 +3,7 @@ import pyxel as p
 class App:
     def __init__(self):
         p.init(256, 256, title="Tower Defense")
-        p.load("theme.pxres")
+        p.load("theme.pyxres")
 
         self.map = Map()
         self.joueur = Joueur()
@@ -22,7 +22,6 @@ class Map:
 
     def draw(self):
         pass
-
 
 class Joueur:
     def __init__(self):
