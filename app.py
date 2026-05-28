@@ -27,6 +27,7 @@ class Map:
         p.rect(0, 0, 256, 256, 11)
         for element in self.chemin:
             p.rect(element[0]*16,element[1]*16,16,16,10)
+            self.tiles[element[0]][element[1]] = "c"
 
 class Manche:
     def __init__(self):
