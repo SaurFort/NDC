@@ -29,6 +29,19 @@ class Manche:
     def __init__(self):
         self.manche = 1
 
+class Tour:
+    def __init__(self, type_tour, x, y, taille, distance, degat, vitesse, prix):
+        self.type = type_tour
+        self.x = x
+        self.y = y
+        self.taille = taille
+        self.distance = distance
+
+        self.niveau = 1
+        self.degat = degat
+        self.vitesse = vitesse
+        self.prix = prix
+
 class Joueur:
     def __init__(self, manche: Manche):
         self.argent = 1000
