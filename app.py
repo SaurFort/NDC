@@ -8,15 +8,18 @@ class App:
         self.map = Map()
         # self.manche = Manche()
         self.joueur = Joueur(Manche())
+        self.ennemi = Ennemi(1,1,1,self.map)
 
         p.run(self.update, self.draw)
 
     def update(self):
         self.joueur.update()
+        self.ennemi.update()
 
     def draw(self):
         self.map.draw()
         self.joueur.draw_hud()
+        self.ennemi.draw()
 
 class Map:
     def __init__(self):
@@ -72,30 +75,36 @@ class Joueur:
 
 
 class Ennemi:
-    def __init__(self,pv,vitesse,degats):
+    def __init__(self,pv,vitesse,degats, map: Map):
         self.pv = pv
         self.vitesse = vitesse
         self.degats = degats
         self.x = 0
         self.y = 0
+        self.map = map
+
+        #p.run(self.update, self.draw)
 
     def draw(self):
-        p.rect(self.x,self.y,5,5,0)
+        self.map.draw()
+        p.rect(self.x * 16,self.y * 16,16,16,3)
 
     def update(self):
-        self.draw()
-        if self.x < 14*16:
+        #self.draw()
+        p.rect(self.x * 16,self.y * 16,16,16,3)
+        if self.y < 15:
             self.deplacement()
 
 
     def deplacement(self):
-        if self.tiles[self.x + 1][self.y] == "c":
-            self.x += 16
-        if self.tiles[self.x ][self.y+1] == "c":
-            self.y += 16
-        if self.tiles[self.x - 1][self.y] == "c":
-            self.x -= 16
-        if self.tiles[self.x][self.y-1] == "c":
-            self.y -= 16
+        if self.map.tiles[self.y + 1][self.x] == "c":
+            self.x += 1
+        if self.map.tiles[self.y ][self.x+1] == "c":
+            self.y += 1
+        if self.map.tiles[self.y - 1][self.x] == "c":
+            self.x -= 1
+        if self.map.tiles[self.y][self.x-1] == "c":
+            self.y -= 1
+        p.text(16, 16, str(self.x) + " " + str(self.y), 0)
 
 App()
