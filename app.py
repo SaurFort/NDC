@@ -30,7 +30,7 @@ class App:
             self.joueur.draw()
         else:
             p.rect(0, 0, 256, 256, 0)
-            p.text(128, 128, "Perdu !", 0)
+            p.text((256 - 28)//2, 128, "Perdu !", 7)
 
 class Map:
     def __init__(self):
