@@ -3,7 +3,7 @@ from random import *
 
 class App:
     def __init__(self):
-        p.init(256, 256, fps=30, title="Tower Defense")
+        p.init(256, 256, fps=30, title="Cube Defense")
         p.load("theme.pyxres")
         p.mouse(True)
 
@@ -22,6 +22,9 @@ class App:
         if not self.over:
             self.manche.update()
             self.joueur.update()
+        else:
+            if p.btn(p.KEY_R):
+                p.reset()
 
     def draw(self):
         if not self.over:
@@ -30,7 +33,8 @@ class App:
             self.joueur.draw()
         else:
             p.rect(0, 0, 256, 256, 0)
-            p.text((256 - 28)//2, 128, "Perdu !", 7)
+            p.text((256 - 28)//2, 122, "Perdu !", 7)
+            p.text((256 - 4*15)//2, 128, "R -> redemarrer", 7)
 
 class Map:
     def __init__(self):
@@ -62,7 +66,7 @@ class Ennemi:
         self.parcouru = [(0,0)]
 
     def draw(self):
-        p.rect(self.y * 16,self.x * 16,16,16,3)
+        p.rect(self.y * 16 + 1,self.x * 16 + 1,14,14,3)
 
     def au_bout(self):
         return self.map.tiles[self.y][self.x] == "f"
@@ -108,10 +112,10 @@ class Manche:
     def ennemi_vivant(self):
         if len(self.ennemis) == 0:
             self.active = False
-            self.joueur.argent+=100
+            self.joueur.argent += (50 + 25 * self.manche)
 
     def _spawn(self):
-        for i in range (randint(self.manche,self.manche*10)):
+        for i in range (randint(self.manche,self.manche*5)):
             ennemi = Ennemi(1,1,self.map)
             self.ennemis.append(ennemi)
 
@@ -221,7 +225,7 @@ class Joueur:
 
         x = self.placement.x
         y = self.placement.y
-        self.placement.valide = not self.map.tiles[x][y] in ["c", "s", "f"]
+        self.placement.valide = self.map.tiles[x][y] == ''
 
         if p.btnp(p.KEY_RIGHT) and x < 14:
             self.placement.x += 1
