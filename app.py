@@ -55,12 +55,14 @@ class Tour:
 
 class Joueur:
     def __init__(self, manche: Manche):
-        self.argent = 1000
+        self.argent = 50
         self.manche = manche
+        self.vie = 20
 
     def draw_hud(self):
         p.text(233, 1, "Tour " + str(self.manche.manche), 0)
-        p.text(252 - (4 * len(str(self.argent))), 7, str(self.argent) + "$" , 0)
+        p.text(240 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
+        p.text(252 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
 
     def update(self):
         #self.draw_hud()
