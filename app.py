@@ -168,7 +168,7 @@ class Tour:
         ennemi.pv -= self.degat
 
     def draw(self, map: Map):
-        map.tiles[self.y][self.x] = "t-" + self.type
+        map.tiles[self.x][self.y] = "t-" + self.type
         if self.type == "normal":
             p.blt(self.x*16, self.y*16, 0, 0, 0, 16, 16)
 
@@ -236,6 +236,9 @@ class Joueur:
             
             if p.btnp(p.KEY_E):
                 self.manche.manche_suivante()
+            
+        if self.vie <= 0:
+            pass
 
     def draw_hud(self):
         p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
