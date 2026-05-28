@@ -2,7 +2,7 @@ import pyxel as p
 
 class App:
     def __init__(self):
-        p.init(256, 256, fps=3, title="Tower Defense")
+        p.init(256, 256, fps=30, title="Tower Defense")
         p.load("theme.pyxres")
         p.mouse(True)
 
@@ -21,8 +21,8 @@ class App:
 
     def draw(self):
         self.map.draw()
-        self.joueur.draw_hud()
         self.ennemi.draw()
+        self.joueur.draw()
 
 class Map:
     def __init__(self):
@@ -52,12 +52,8 @@ class Ennemi:
         self.y = 0
         self.map = map
 
-        #p.run(self.update, self.draw)
-
     def draw(self):
-        self.map.draw()
         p.rect(self.y * 16,self.x * 16,16,16,3)
-        p.text(16, 16, str(self.x) + " " + str(self.y), 0)
 
     def deplacement(self):
         if self.map.tiles[self.y][self.x + 1] == "c":
@@ -111,6 +107,11 @@ class Tour:
         self.vitesse = vitesse
         self.prix = prix
 
+    def preview_draw(self, map: Map):
+        if self.type == "normal":
+            p.blt(self.x*16, self.y*16, 0, 0, 0, 16, 16)
+            p.rectb(self.x*16, self.y*16, 16, 16, 0)
+
     def draw(self, map: Map):
         map.tiles[self.y][self.x] = "t-" + self.type
         if self.type == "normal":
@@ -118,17 +119,31 @@ class Tour:
 
 class Joueur:
     def __init__(self, manche: Manche, carte: Map):
-        self.argent = 50
+        self.argent = 200
         self.vie = 20
         self.manche = manche
         self.map = carte
         self.tours: list[Tour] = []
+        self.placement = None
 
     def update_sidebar(self):
-        pass
+        if p.btnp(p.MOUSE_BUTTON_LEFT):
+            x = p.mouse_x
+            y = p.mouse_y
+            if self.argent >= 200:
+                if x >= 240 and x <= 256 and y >= 32 and y <= 48:
+                    self.argent -= 200
+                    self.placement = Tour(7, 7, 1, 2, 1, 1, 500, "normal")
+
+    def update_placement_tour(self):
+        assert isinstance(self.placement, Tour)
 
     def update(self):
-        self.update_sidebar()
+        if not self.manche.active:
+            self.update_sidebar()
+
+            if self.placement:
+                self.update_placement_tour()
 
     def draw_hud(self):
         p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
@@ -140,13 +155,23 @@ class Joueur:
             tour.draw(self.map)
 
     def draw_sidebar(self):
-        p.blt(240, 32, 0, 0 , 0, 16, 16)
-        p.rectb(240, 32, 16, 16, 0)
-        p.text(243, 50, "50$", 7)
+        if self.argent >= 200:
+            p.blt(240, 32, 0, 0 , 0, 16, 16)
+            p.rectb(240, 32, 16, 16, 0)
+        else:
+            p.rect(240, 32, 16, 16, 0)
+        p.text(241, 50, "200$", 7)
+
+    def draw_placement_tour(self):
+        assert isinstance(self.placement, Tour)
+        self.placement.preview_draw(self.map)
 
     def draw(self):
         self.draw_hud()
         self.draw_tour()
         self.draw_sidebar()
+        
+        if self.placement:
+            self.draw_placement_tour()
 
 App()
