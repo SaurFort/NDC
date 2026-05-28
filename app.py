@@ -1,4 +1,5 @@
 import pyxel as p
+from random import *
 
 class App:
     def __init__(self):
@@ -7,9 +8,9 @@ class App:
         p.mouse(True)
 
         self.map = Map()
-        # self.manche = Manche()
-        self.ennemi = Ennemi(1,1,1,self.map)
-        self.manche = Manche()
+        #self.manche = Manche()
+        #self.ennemi = Ennemi(1,1,self.map)
+        self.manche = Manche(self.map)
         self.joueur = Joueur(self.manche, self.map)
         
         p.run(self.update, self.draw)
@@ -17,11 +18,11 @@ class App:
     def update(self):
         self.manche.update()
         self.joueur.update()
-        self.ennemi.update()
+        #self.ennemi.update()
 
     def draw(self):
         self.map.draw()
-        self.ennemi.draw()
+        #self.ennemi.draw()
         self.joueur.draw()
 
 class Map:
@@ -45,9 +46,8 @@ class Map:
         p.text(227, 246, "Fin", 0)
 
 class Ennemi:
-    def __init__(self,pv,vitesse,degats, map: Map):
+    def __init__(self,pv,degats, map: Map):
         self.pv = pv
-        self.vitesse = vitesse
         self.degats = degats
         self.x = 0
         self.y = 0
@@ -83,7 +83,7 @@ class Ennemi:
 
 
 class Manche:
-    def __init__(self):
+    def __init__(self,map:Map):
         self.manche = 0
         self.active = False
         self.ennemis = []
@@ -98,10 +98,15 @@ class Manche:
             self.active = False
 
     def _spawn(self):
-        ennemi = Ennemi(1, 1, 1)
+        for i in range (randint(self.manche,self.manche*10)):
+            ennemi = Ennemi(5,1,map)
+            self.ennemis.append(ennemi)
 
     def update(self):
         self.ennemi_vivant()
+        for ennemi in self.ennemis:
+            self.ennemi.draw
+            self.ennemi.update
 
 class Tour:
     def __init__(self, x, y, taille, distance, degat, vitesse, prix,  type_tour = "normal"):
