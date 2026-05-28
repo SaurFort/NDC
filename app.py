@@ -98,7 +98,8 @@ class Manche:
             self.active = False
 
     def _spawn(self):
-        ennemi = Ennemi(1, 1, 1)
+        #ennemi = Ennemi(1, 1, 1)
+        pass
 
     def update(self):
         self.ennemi_vivant()
@@ -126,6 +127,9 @@ class Tour:
                 p.rectb(self.x*16, self.y*16, 16, 16, 0)
             else:
                 p.rectb(self.x*16, self.y*16, 16, 16, 8)
+
+    def tir(self, ennemi: Ennemi):
+        ennemi.pv -= self.degat
 
     def draw(self, map: Map):
         map.tiles[self.y][self.x] = "t-" + self.type
@@ -181,11 +185,17 @@ class Joueur:
 
             if self.placement:
                 self.update_placement_tour()
+            
+            if p.btnp(p.KEY_E):
+                self.manche.manche_suivante()
 
     def draw_hud(self):
         p.text(220 - (4 * len(str(self.manche.manche))), 1, "Tour " + str(self.manche.manche), 0)
         p.text(224 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
         p.text(236 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
+
+        if not self.manche.active:
+            p.text(96, 248, "E -> manche suivante", 0)
 
     def draw_tour(self):
         for tour in self.tours:
