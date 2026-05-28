@@ -161,12 +161,12 @@ class Tour:
         tab[self.x][self.y] = True
         for j in range(1, self.distance + 1):
             for i in range(self.distance + 1):
-                tab[self.x][self.y+i] = True
-                tab[self.x][self.y-i] = True
-                tab[self.x+j][self.y+i] = True
-                tab[self.x+j][self.y-i] = True
-                tab[self.x-j][self.y+i] = True
-                tab[self.x-j][self.y-i] = True
+                tab[self.x][min(self.y+i, 14)] = True
+                tab[self.x][max(self.y-i, 0)] = True
+                tab[min(self.x+j, 15)][min(self.y+i, 14)] = True
+                tab[min(self.x+j, 15)][max(self.y-i, 0)] = True
+                tab[max(self.x-j, 0)][min(self.y+i, 14)] = True
+                tab[max(self.x-j, 0)][max(self.y-i, 0)] = True
         
         if tab[ennemi.y][ennemi.x]:
             return True
