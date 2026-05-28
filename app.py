@@ -2,7 +2,7 @@ import pyxel as p
 
 class App:
     def __init__(self):
-        p.init(256, 256, fps=3, title="Tower Defense")
+        p.init(256, 256, fps=10, title="Tower Defense")
         p.load("theme.pyxres")
         p.mouse(True)
 
@@ -38,6 +38,7 @@ class Map:
             p.rect(element[0]*16,element[1]*16,16,16,10)
             self.tiles[element[0]][element[1]] = "c"
         
+        
         self.tiles[0][0] = "s"
         self.tiles[14][15] = "f"
         p.text(2, 5, "Spawn", 0)
@@ -60,13 +61,13 @@ class Ennemi:
         p.text(16, 16, str(self.x) + " " + str(self.y), 0)
 
     def deplacement(self):
-        if self.map.tiles[self.y][self.x + 1] == "c" and (self.y,self.x+1) not in self.parcouru:
+        if self.x < 14 and self.map.tiles[self.y][self.x + 1] == "c" and (self.y,self.x+1) not in self.parcouru:
             self.parcouru.append((self.y,self.x+1))
             self.x += 1
         elif self.map.tiles[self.y][self.x - 1] == "c" and (self.y,self.x-1) not in self.parcouru:
             self.parcouru.append((self.y,self.x-1))
             self.x -= 1
-        elif self.map.tiles[self.y + 1][self.x] == "c" and (self.y+1,self.x) not in self.parcouru:
+        elif self.y < 15 and self.map.tiles[self.y + 1][self.x] == "c" and (self.y+1,self.x) not in self.parcouru:
             self.parcouru.append((self.y+1,self.x))
             self.y += 1
         elif self.map.tiles[self.y - 1][self.x] == "c" and (self.y-1,self.x) not in self.parcouru:
@@ -76,8 +77,10 @@ class Ennemi:
     def update(self):
         #self.draw()
         #p.rect(self.x * 16,self.y * 16,16,16,3)
-        #if self.y < 15:
-        self.deplacement()
+        if self.map.tiles[self.y][self.x + 1] == "f":
+            self.x += 1
+        else:
+            self.deplacement()
 
 
 class Manche:
