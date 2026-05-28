@@ -10,3 +10,7 @@ class App:
 
     def draw(self):
         pass
+
+class Joueur:
+    def __init__(self):
+        self.argent = 0
