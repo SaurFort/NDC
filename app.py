@@ -6,17 +6,19 @@ class App:
         p.load("theme.pyxres")
 
         self.map = Map()
-        # self.manche = Manche()
-        self.joueur = Joueur(Manche())
+        self.manche = Manche()
+        self.joueur = Joueur(self.manche, self.map)
 
         p.run(self.update, self.draw)
 
     def update(self):
-        self.joueur.update()
+        #self.joueur.update()
+        pass
 
     def draw(self):
         self.map.draw()
-        self.joueur.draw_hud()
+        self.joueur.draw()
+        
 
 class Map:
     def __init__(self):
@@ -55,19 +57,30 @@ class Tour:
         self.vitesse = vitesse
         self.prix = prix
 
+    def draw(self, map: Map):
+        map.tiles[self.y][self.x] = "t-" + self.type
+        if self.type == "normal":
+            p.blt(self.x*16, self.y*16, 0, 0, 0, 16, 16)
+
 class Joueur:
-    def __init__(self, manche: Manche):
+    def __init__(self, manche: Manche, carte: Map):
         self.argent = 50
-        self.manche = manche
         self.vie = 20
+        self.manche = manche
+        self.map = carte
+        self.tours: list[Tour] = []
 
     def draw_hud(self):
         p.text(217, 1, "Tour " + str(self.manche.manche), 0)
         p.text(224 - (4 * len(str(self.vie))), 7, "Vie:" + str(self.vie), 0)
         p.text(236 - (4 * len(str(self.argent))), 13, str(self.argent) + "$" , 0)
 
-    def update(self):
-        #self.draw_hud()
-        pass
+    def draw_tour(self):
+        for tour in self.tours:
+            tour.draw(self.map)
+
+    def draw(self):
+        self.draw_hud()
+        self.draw_tour
 
 App()
