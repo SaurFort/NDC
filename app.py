@@ -90,7 +90,7 @@ class Manche:
         self.active = False
         self.map = map
         self.ennemis: list[Ennemi] = []
-        self.callback_degat = ""
+        self.joueur: Joueur
 
     def manche_suivante(self):
         self.manche += 1
@@ -103,18 +103,23 @@ class Manche:
 
     def _spawn(self):
         for i in range (randint(self.manche,self.manche*10)):
-            ennemi = Ennemi(5,1,self.map)
+            ennemi = Ennemi(1,1,self.map)
             self.ennemis.append(ennemi)
 
     def update(self):
-        self.ennemi_vivant()
-        for ennemi in self.ennemis:
-            ennemi.update()
-            if ennemi.au_bout():
-                self.ennemis.remove(ennemi)
-                self.callback_degat(ennemi.degats)
+        if self.active:
+            self.joueur.action_tour(self.ennemis)
+            self.ennemi_vivant()
+            for ennemi in self.ennemis:
+                if ennemi.pv <= 0:
+                    self.ennemis.remove(ennemi)
+                ennemi.update()
+                if ennemi.au_bout():
+                    self.ennemis.remove(ennemi)
+                    self.joueur.perdre_vie(ennemi.degats)
 
     def draw(self):
+        p.text(32, 32, str(len(self.ennemis)), 0)
         for ennemi in self.ennemis:
             ennemi.draw()
 
@@ -142,6 +147,23 @@ class Tour:
             else:
                 p.rectb(self.x*16, self.y*16, 16, 16, 8)
 
+    def peut_tirer(self, ennemi: Ennemi):
+        tab = [ [ False for _ in range(15) ] for _ in range(16) ]
+        tab[self.x][self.y] = True
+        for j in range(1, self.distance + 1):
+            for i in range(self.distance + 1):
+                tab[self.x][self.y+i] = True
+                tab[self.x][self.y-i] = True
+                tab[self.x+j][self.y+i] = True
+                tab[self.x+j][self.y-i] = True
+                tab[self.x-j][self.y+i] = True
+                tab[self.x-j][self.y-i] = True
+        
+        if tab[ennemi.y][ennemi.x]:
+            return True
+        return False
+
+        
     def tir(self, ennemi: Ennemi):
         ennemi.pv -= self.degat
 
@@ -159,10 +181,17 @@ class Joueur:
         self.tours: list[Tour] = []
         self.placement = None
 
-        self.manche.callback_degat = self.perdre_vie
+        self.manche.joueur = self
 
     def perdre_vie(self, degat):
         self.vie -= degat
+
+    def action_tour(self, ennemis: list[Ennemi]):
+        for tour in self.tours:
+            for ennemi in ennemis:
+                if tour.peut_tirer(ennemi):
+                    tour.tir(ennemi)
+                    break
 
     def update_sidebar(self):
         if p.btnp(p.MOUSE_BUTTON_LEFT):
