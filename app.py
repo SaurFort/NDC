@@ -2,15 +2,15 @@ import pyxel as p
 
 class App:
     def __init__(self):
-        p.init(256, 256, title="Tower Defense")
+        p.init(256, 256, fps=3, title="Tower Defense")
         p.load("theme.pyxres")
         p.mouse(True)
 
         self.map = Map()
         # self.manche = Manche()
-        self.joueur = Joueur(Manche())
         self.ennemi = Ennemi(1,1,1,self.map)
         self.manche = Manche()
+        self.joueur = Joueur(self.manche, self.map)
         
         p.run(self.update, self.draw)
 
@@ -56,25 +56,25 @@ class Ennemi:
 
     def draw(self):
         self.map.draw()
-        p.rect(self.x * 16,self.y * 16,16,16,3)
+        p.rect(self.y * 16,self.x * 16,16,16,3)
+        p.text(16, 16, str(self.x) + " " + str(self.y), 0)
+
+    def deplacement(self):
+        if self.map.tiles[self.y][self.x + 1] == "c":
+            self.x += 1
+        elif self.map.tiles[self.y][self.x - 1] == "c":
+            self.x -= 1
+        elif self.map.tiles[self.y + 1][self.x] == "c":
+            self.y += 1
+        elif self.map.tiles[self.y - 1][self.x] == "c":
+            self.y -= 1
 
     def update(self):
         #self.draw()
-        p.rect(self.x * 16,self.y * 16,16,16,3)
-        if self.y < 15:
-            self.deplacement()
+        #p.rect(self.x * 16,self.y * 16,16,16,3)
+        #if self.y < 15:
+        self.deplacement()
 
-
-    def deplacement(self):
-        if self.map.tiles[self.y + 1][self.x] == "c":
-            self.x += 1
-        if self.map.tiles[self.y ][self.x+1] == "c":
-            self.y += 1
-        if self.map.tiles[self.y - 1][self.x] == "c":
-            self.x -= 1
-        if self.map.tiles[self.y][self.x-1] == "c":
-            self.y -= 1
-        p.text(16, 16, str(self.x) + " " + str(self.y), 0)
 
 class Manche:
     def __init__(self):
